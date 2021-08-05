@@ -26,14 +26,14 @@ form.
 
 So in that file we want to change our component to look like the following:
 
-```JavaScript
+```jsx
 // ./src/components/todos/CreateTodo.js
 
-import React, { Component } from 'react'
+import React, { Component } from "react";
 
 class CreateTodo extends Component {
   render() {
-    return(
+    return (
       <div>
         <form>
           <p>
@@ -45,7 +45,7 @@ class CreateTodo extends Component {
       </div>
     );
   }
-};
+}
 
 export default CreateTodo;
 ```
@@ -56,7 +56,7 @@ Now let's think about how we want to integrate this into **Redux**. Essentially,
 upon submitting the form, we would like to dispatch the following action to the
 store:
 
-```JavaScript
+```jsx
 {
   type: 'ADD_TODO',
   todo: todo
@@ -65,7 +65,7 @@ store:
 
 So if the user has typed in buy groceries, our action would look like:
 
-```JavaScript
+```jsx
 {
   type: 'ADD_TODO',
   todo: 'buy groceries'
@@ -75,8 +75,10 @@ So if the user has typed in buy groceries, our action would look like:
 But how do we get that text from the form's input? Well, we can use our normal
 React trick of updating the _createTodo component's_ state whenever someone
 types something into the form. Then, when the user clicks on the submit button,
-we can grab that state, and call `store.dispatch({ type: 'ADD_TODO', todo: this.state })`. Ok, time to implement it. Step one will be updating the
-component state whenever someone types in the form.
+we can grab that state, and call
+`store.dispatch({ type: 'ADD_TODO', todo: this.state })`. Ok, time to implement
+it. Step one will be updating the component state whenever someone types in the
+form.
 
 ### 1. Create a Controlled Form Using State and an `onChange` Event Handler
 
@@ -84,7 +86,7 @@ Every time the input is changed, we want to change the state. To do this we
 first add an event handler for every input that changes. So inside the
 createTodo component, we change our render function to the following.
 
-```JavaScript
+```jsx
 // ./src/components/todos/createTodo
 
 ...
@@ -114,7 +116,7 @@ Okay, our code calls the `handleChange()` function each time the user types in
 the input, but we still need to write that handleChange function. Let's start
 with the old way, setting a state value:
 
-```JavaScript
+```jsx
 // ./src/components/todos/createTodo
 
 ...
@@ -167,10 +169,10 @@ them inside a `constructor()`. This means that, instead of writing
 and assign an arrow function to it:
 
 ```js
-handleChange = event => {
-	this.setState({
-		text: event.target.value
-	});
+handleChange = (event) => {
+  this.setState({
+    text: event.target.value,
+  });
 };
 ```
 
@@ -219,43 +221,44 @@ component will re-render and display the new value for `this.state.text`.
 
 The _CreateTodo_ component should look like the following now:
 
-```JavaScript
+```jsx
 // ./src/components/todos/CreateTodo.js
 
-import React, { Component } from 'react';
+import React, { Component } from "react";
 
 class CreateTodo extends Component {
-
   constructor() {
     super();
     this.state = {
-      text: '',
+      text: "",
     };
   }
 
-  handleChange = event => {
+  handleChange = (event) => {
     this.setState({
-      text: event.target.value
+      text: event.target.value,
     });
-  }
+  };
 
   render() {
-    return(
+    return (
       <div>
         <form>
-    	  <p>
-      	    <label>add todo</label>
+          <p>
+            <label>add todo</label>
             <input
-	      type="text"
-	      onChange={this.handleChange} value={this.state.text}/>
+              type="text"
+              onChange={this.handleChange}
+              value={this.state.text}
+            />
           </p>
           <input type="submit" />
-       </form>
-       {this.state.text}
-     </div>
-   );
+        </form>
+        {this.state.text}
+      </div>
+    );
   }
-};
+}
 
 export default CreateTodo;
 ```
@@ -275,24 +278,23 @@ submit, we dispatch an action to the store. Notice that a lot of the setup for
 Redux is already done for you. Open up the `./src/index.js` file. There you'll
 see the following:
 
-```JavaScript
+```jsx
 // ./src/index.js
 
-import React from 'react';
-import ReactDOM from 'react-dom';
-import App from './App';
-import manageTodo from './reducers/manageTodo';
-import { Provider } from 'react-redux';
-import { createStore } from 'redux';
+import React from "react";
+import ReactDOM from "react-dom";
+import App from "./App";
+import manageTodo from "./reducers/manageTodo";
+import { Provider } from "react-redux";
+import { createStore } from "redux";
 
 let store = createStore(manageTodo);
-
 
 ReactDOM.render(
   <Provider store={store}>
     <App />
   </Provider>,
-  document.getElementById('root')
+  document.getElementById("root")
 );
 ```
 
@@ -322,7 +324,7 @@ Next, as we write out our `mapDispatchToProps()` function, we'll need to decide
 on how to structure our data and the related action. The basic frame of the
 function will look like the following:
 
-```js
+```jsx
 // ./src/components/todos/CreateTodo.js
 
 const mapDispatchToProps = dispatch => {
@@ -336,7 +338,7 @@ On submission of the form in our component, we want to send the value we've
 captured in the local state to be added to our **Redux** store. With the above
 set up, `addTodo` becomes a function in props that is able take arguments.
 
-```js
+```jsx
 const mapDispatchToProps = dispatch => {
   return {
     addTodo: formData => dispatch(<some action>)
@@ -348,10 +350,10 @@ From the Redux docs, we know that <some action> needs to be a plain javascript o
 with a `type` key describing the type of action. We also need to include the data from
 the form - in this case, we'll call that key 'payload'.
 
-```js
-const mapDispatchToProps = dispatch => {
+```jsx
+const mapDispatchToProps = (dispatch) => {
   return {
-    addTodo: formData => dispatch({ type: 'ADD_TODO', payload: formData })
+    addTodo: (formData) => dispatch({ type: "ADD_TODO", payload: formData }),
   };
 };
 ```
@@ -362,7 +364,7 @@ Since `this.state` is an object with only one property, `text`.
 Now we need to update the **render()** function of the **CreateTodo** component
 to call a callback on the submission of a form:
 
-```JavaScript
+```jsx
 // ./src/components/todos/CreateTodo.js
 
 ...
@@ -374,7 +376,7 @@ to call a callback on the submission of a form:
 
 The **handleSubmit()** function:
 
-```JavaScript
+```jsx
 // ./src/components/todos/CreateTodo.js
 
 ...
@@ -391,22 +393,22 @@ When `handleSubmit()` is called, whatever is currently stored in `this.state`
 will be sent off to our reducer via our dispatched action. The fully
 redux'd component ends up looking the like the following:
 
-```js
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+```jsx
+import React, { Component } from "react";
+import { connect } from "react-redux";
 
 class CreateTodo extends Component {
   state = {
-    text: ''
+    text: "",
   };
 
-  handleChange = event => {
+  handleChange = (event) => {
     this.setState({
-      text: event.target.value
+      text: event.target.value,
     });
   };
 
-  handleSubmit = event => {
+  handleSubmit = (event) => {
     event.preventDefault();
     this.props.addTodo(this.state);
   };
@@ -414,14 +416,14 @@ class CreateTodo extends Component {
   render() {
     return (
       <div>
-        <form onSubmit={event => this.handleSubmit(event)}>
+        <form onSubmit={(event) => this.handleSubmit(event)}>
           <p>
             <label>add todo</label>
-              <input
-                type="text"
-                onChange={event => this.handleChange(event)}
-                value={this.state.text}
-              />
+            <input
+              type="text"
+              onChange={(event) => this.handleChange(event)}
+              value={this.state.text}
+            />
           </p>
           <input type="submit" />
         </form>
@@ -430,16 +432,13 @@ class CreateTodo extends Component {
   }
 }
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch) => {
   return {
-    addTodo: formData => dispatch({ type: 'ADD_TODO', payload: formData })
+    addTodo: (formData) => dispatch({ type: "ADD_TODO", payload: formData }),
   };
 };
 
-export default connect(
-  null,
-  mapDispatchToProps
-)(CreateTodo);
+export default connect(null, mapDispatchToProps)(CreateTodo);
 ```
 
 Now, when the form is submitted, whatever the `this.state` is will be dispatched
@@ -451,35 +450,35 @@ Remember that, if not given any arguments, `connect` will return `dispatch` as a
 prop to the component we're wrapping with `connect`. So an alternative way to
 write the CreateTodo component could be:
 
-```js
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+```jsx
+import React, { Component } from "react";
+import { connect } from "react-redux";
 
 class CreateTodo extends Component {
   state = {
-    text: ''
+    text: "",
   };
 
-  handleChange = event => {
+  handleChange = (event) => {
     this.setState({
-      text: event.target.value
+      text: event.target.value,
     });
   };
 
-  handleSubmit = event => {
+  handleSubmit = (event) => {
     event.preventDefault();
-    this.props.dispatch({ type: 'ADD_TODO', payload: this.state });
+    this.props.dispatch({ type: "ADD_TODO", payload: this.state });
   };
 
   render() {
     return (
       <div>
-        <form onSubmit={event => this.handleSubmit(event)}>
+        <form onSubmit={(event) => this.handleSubmit(event)}>
           <p>
             <label>add todo</label>
             <input
               type="text"
-              onChange={event => this.handleChange(event)}
+              onChange={(event) => this.handleChange(event)}
               value={this.state.text}
             />
           </p>
@@ -506,13 +505,10 @@ must lie with our reducer. Open up the file `./src/reducers/manageTodo.js`.
 This function does nothing. Let's fix that. First we need to provide an initial
 state. Because, we want our state to look like:
 
-```JavaScript
+```jsx
 state = {
-  todos: [
-    { text: 'buy groceries' },
-    { text: 'watch netflix' },
-  ]
-}
+  todos: [{ text: "buy groceries" }, { text: "watch netflix" }],
+};
 ```
 
 Our initial state should be an empty list of todos, { todos: [] }.
@@ -521,15 +517,17 @@ Second, we need to concatenate a new todo each time we receive an action that
 looks like `{ type: 'ADD_TODO', payload: { text: 'watch baseball' } }`. Ok, let's
 do it.
 
-```JavaScript
+```jsx
 // ./src/reducers/manageTodo.js
 
-export default function manageTodo(state = {
-  todos: [],
-}, action) {
+export default function manageTodo(
+  state = {
+    todos: [],
+  },
+  action
+) {
   switch (action.type) {
-    case 'ADD_TODO':
-
+    case "ADD_TODO":
       console.log({ todos: state.todos.concat(action.payload.text) });
 
       return { todos: state.todos.concat(action.payload.text) };
