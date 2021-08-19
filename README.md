@@ -24,19 +24,16 @@ todo and a submit button.
 
 In `App.js` you can see that we are rendering a `CreateTodo` component which is
 imported from the `components/todos` folder; the `CreateTodo` component is where
-we will build our form. If you boot up the application (run `npm install && npm
-start`), you'll see the text that is currently being rendered in the
-`CreateTodo` component.
+we will build our form. If you boot up the application (run
+`npm install && npm start`), you'll see the text that is currently being
+rendered in the `CreateTodo` component.
 
 To build our form, let's update the code in the `CreateTodo` component,
 replacing the text with a form element:
 
 ```jsx
 <form>
-  <input
-    type="text"
-    placeholder="add todo" 
-  />
+  <input type="text" placeholder="add todo" />
   <input type="submit" />
 </form>
 ```
@@ -84,10 +81,12 @@ someone types in the form.
 ### 1. Create a Controlled Form Using State and an `onChange` Event Handler
 
 Every time the input is changed, we want to change the component state. To
-review, the process for doing this is: 1) create our initial component state;
-then 2) add an `onChange` handler to our input that calls a function which will
-3) use `setState` to update the component state whenever the user types
-something in the input field.
+review, the process for doing this is:
+
+1. create our initial component state; then
+2. add an `onChange` handler to our input that calls a function which will...
+3. use `setState` to update the component state whenever the user types
+   something in the input field.
 
 Let's start by setting the component's initial state:
 
@@ -118,7 +117,7 @@ render() {
       <form>
         <input
           type="text"
-          placeholder="add todo" 
+          placeholder="add todo"
           onChange={(event) => this.handleChange(event)}
         />
         <input type="submit" />
@@ -212,7 +211,7 @@ class CreateTodo extends Component {
           <p>
             <input
               type="text"
-              placeholder="add todo" 
+              placeholder="add todo"
               onChange={this.handleChange}
               value={this.state.text}
             />
@@ -296,21 +295,21 @@ function will look like the following:
 ```jsx
 // ./src/components/todos/CreateTodo.js
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch) => {
   return {
-    addTodo: () => dispatch(<some action>)
-  }
-}
+    addTodo: () => dispatch(someAction),
+  };
+};
 ```
 
-From the Redux docs, we know that `<some action>` needs to be a plain javascript
+From the Redux docs, we know that `someAction` needs to be a plain JavaScript
 object with a `type` key describing the type of action. We also need to include
 the data from the form - we'll call that key 'payload'.
 
 ```jsx
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch) => {
   return {
-    addTodo: () => dispatch({ type: 'ADD_TODO', payload: <form data> })
+    addTodo: () => dispatch({ type: "ADD_TODO", payload: formData }),
   };
 };
 ```
@@ -383,12 +382,12 @@ class CreateTodo extends Component {
   render() {
     return (
       <div>
-        <form onSubmit={(event) => this.handleSubmit(event)}>
+        <form onSubmit={this.handleSubmit}>
           <p>
             <input
               type="text"
               placeholder="add todo"
-              onChange={(event) => this.handleChange(event)}
+              onChange={this.handleChange}
               value={this.state.text}
             />
           </p>
@@ -445,18 +444,20 @@ in the reducer to update the state. So let's do that.
 Open up the file `./src/reducers/manageTodo.js` and you will see that the
 initial state is already set to an empty list of todos. Next, we need to update
 our reducer so it will add a new todo each time we receive an action. For
-example, if it receives an action that looks like `{ type: 'ADD_TODO', payload:
-{ text: 'watch baseball' } }`, our state should be updated to look like:
+example, if it receives an action that looks like
+`{ type: 'ADD_TODO', payload: { text: 'watch baseball' } }`, our state should be
+updated to look like:
 
 ```jsx
 state = {
-  todos: ['watch baseball']
-}
+  todos: ["watch baseball"],
+};
 ```
 
 To do that, we will add a switch statement to our reducer that switches on our
-action type, and add a case for our `ADD_TODO` action. There we will concat the
-new todo onto the list of todos in our state:
+action type, and add a case for our `ADD_TODO` action. There we will use the
+spread operator to create a new list of todos in our state with the added todo
+at the end:
 
 ```jsx
 // ./src/reducers/manageTodo.js
@@ -469,9 +470,9 @@ export default function manageTodo(
 ) {
   switch (action.type) {
     case "ADD_TODO":
-      console.log({ todos: state.todos.concat(action.payload.text) });
+      console.log({ todos: [...state.todos, action.payload.text] });
 
-      return { todos: state.todos.concat(action.payload.text) };
+      return { todos: [...state.todos, action.payload.text] };
 
     default:
       return state;
@@ -479,9 +480,9 @@ export default function manageTodo(
 }
 ```
 
-Ok, with these changes, open up the console in your browser, and try adding a
-few todos. The log will show that our reducer is concatenating new values every
-time the form is submitted!
+With these changes, open up the console in your browser, and try adding a few
+todos. The log will show that our reducer is adding new values every time
+the form is submitted!
 
 In the next lesson we will tackle rendering our list of todos to the DOM.
 
@@ -493,7 +494,7 @@ There's a lot of typing in this section, but three main steps.
   this by building a form, and then making sure that whenever the user typed
   something into the form's input, the component's state was updated.
 
-- Second, We connected the component to **Redux** and created our
+- Second, we connected the component to **Redux** and created our
   `mapDispatchToProps` to dispatch our `ADD_TODO` action to the reducer
 
 - Third, we built our reducer such that it responded to the appropriate event
